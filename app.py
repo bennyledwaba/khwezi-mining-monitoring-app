@@ -200,38 +200,99 @@ def login_page():
     st.markdown(
         """
         <style>
+        html, body, [data-testid="stAppViewContainer"] {
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+
         .big-title {
-            font-size: 2.5rem;
-            font-weight: 700;
+            font-size: 4.0rem;
+            font-weight: 800;
+            line-height: 1.0;
+            color: #1f2937;
+            margin-top: 25px;
+            margin-bottom: 10px;
         }
+
         .subtext {
-            color: #8ab4f8;
-            font-size: 1.1rem;
+            color: #4a90e2;
+            font-size: 2.0rem;
+            font-weight: 500;
+            margin-bottom: 28px;
         }
+
+        .auth-toggle {
+            background: #1f2937;
+            border-radius: 999px;
+            padding: 6px;
+            margin-bottom: 24px;
+            width: fit-content;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+
         .panel {
             background: #1f2937;
-            border-radius: 12px;
-            padding: 24px;
-            border: 1px solid #374151;
-            margin-top: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            color: white;
+            border-radius: 16px;
+            padding: 26px 24px;
+            border: 1px solid #d1d5db;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.08);
         }
+
+        .stTextInput > div > div > input,
+        .stSelectbox > div > div,
+        .stNumberInput > div > div > input {
+            background: #ffffff;
+            color: #111827;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+        }
+
+        label {
+            color: #ffffff !important;
+            font-weight: 600;
+        }
+
+        .stButton > button {
+            background: #2b3a4b;
+            color: white;
+            border-radius: 10px;
+            border: 1px solid #2b3a4b;
+            font-weight: 700;
+        }
+
+        .stButton > button:hover {
+            background: #1f2a38;
+            border-color: #1f2a38;
+        }
+
         .stRadio > div {
             background: #111827;
-            padding: 10px 12px;
-            border-radius: 12px;
+            border-radius: 999px;
+            padding: 5px 8px;
+            width: fit-content;
             border: 1px solid #374151;
+        }
+
+        .stRadio label {
+            color: white !important;
+            font-weight: 600;
+        }
+
+        .stRadio [data-baseweb="radio"] {
+            margin-right: 10px;
         }
         </style>
         """,
         unsafe_allow_html=True,
     )
 
-    st.markdown('<div class="big-title">Khwezi Mining Health, Safety & Equipment System</div>', unsafe_allow_html=True)
+    st.markdown('<div class="big-title">Khwezi Mining Health</div>', unsafe_allow_html=True)
     st.markdown('<div class="subtext">Wits MINN2020A Project</div>', unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown('<div class="auth-toggle">', unsafe_allow_html=True)
     auth_mode = st.radio("", ["Login", "Sign Up"], horizontal=True, index=0)
+    st.markdown('</div>', unsafe_allow_html=True)
 
     if auth_mode == "Login":
         st.markdown("<div class='panel'>", unsafe_allow_html=True)
