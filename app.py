@@ -192,7 +192,7 @@ def get_allowed_tabs(role):
 
 
 # ============================
-# Login and Signup UI
+# Login and signup UI
 # ============================
 def login_page():
     ensure_data_files()
@@ -213,6 +213,14 @@ def login_page():
             border-radius: 12px;
             padding: 24px;
             border: 1px solid #374151;
+            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+        .stRadio > div {
+            background: #111827;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid #374151;
         }
         </style>
         """,
@@ -222,9 +230,10 @@ def login_page():
     st.markdown('<div class="big-title">Khwezi Mining Health, Safety & Equipment System</div>', unsafe_allow_html=True)
     st.markdown('<div class="subtext">Wits MINN2020A Project</div>', unsafe_allow_html=True)
 
-    col1, col2 = st.columns([1.1, 1])
+    st.markdown("<br>", unsafe_allow_html=True)
+    auth_mode = st.radio("", ["Login", "Sign Up"], horizontal=True, index=0)
 
-    with col1:
+    if auth_mode == "Login":
         st.markdown("<div class='panel'>", unsafe_allow_html=True)
         st.subheader("Login")
 
@@ -252,9 +261,9 @@ def login_page():
 
         st.markdown("</div>", unsafe_allow_html=True)
 
-    with col2:
+    else:
         st.markdown("<div class='panel'>", unsafe_allow_html=True)
-        st.subheader("Create account")
+        st.subheader("Create Account")
 
         with st.form("signup_form", clear_on_submit=True):
             new_username = st.text_input("New Username")
