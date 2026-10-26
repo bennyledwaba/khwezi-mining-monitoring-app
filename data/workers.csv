@@ -1,0 +1,4 @@
+worker_id,full_name,department,role,induction_status,medical_clearance
+KWM-001,Thabo Dlamini,Production,Drill Operator,Passed,Fit
+KWM-002,Aphiwe Nkosi,Maintenance,Technician,Passed,Fit
+KWM-003,Lerato Moloi,Safety,Safety Auditor,Passed,Fit

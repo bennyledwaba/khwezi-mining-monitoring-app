@@ -1,0 +1,4 @@
+incident_id,date_logged,classification,likelihood,consequence,risk_rating,logged_by,status
+INC-001,2026-08-15 08:30:00,Equipment Scrape,2,3,Medium,safety1,Resolved
+INC-002,2026-08-17 10:45:00,Unsafe Behaviour,3,4,High,safety1,Investigating
+INC-003,2026-08-19 14:20:00,Ventilation Concern,4,5,Critical,safety1,Open

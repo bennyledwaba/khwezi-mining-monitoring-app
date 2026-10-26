@@ -1,0 +1,4 @@
+asset_id,category,assigned_location,status,operating_time,downtime,temperature_c,vibration_mm_s
+EQP-01,LHD Loader,Level 3 - North Block,Operational,1420,200,46,6.4
+EQP-02,Truck,Level 2 - East Pit,Under Maintenance,2890,1100,62,8.9
+EQP-03,Drill Rig,Level 1 - South Shaft,Operational,1760,340,49,7.2
