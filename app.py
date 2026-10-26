@@ -16,6 +16,7 @@ INCIDENTS_FILE = "safety_incidents.csv"
 EQUIPMENT_FILE = "equipment.csv"
 MAINTENANCE_FILE = "maintenance.csv"
 RISK_FILE = "risk_assessments.csv"
+ACCOUNTS_FILE = "user_accounts.csv"
 
 # =========================
 # Styling
@@ -423,6 +424,18 @@ def make_default_risks():
     )
 
 
+def make_default_accounts():
+    return pd.DataFrame(
+        [
+            {"username": "admin", "password": "admin@khwezi", "role": "Administrator"},
+            {"username": "safety", "password": "safety@khwezi", "role": "Safety Officer"},
+            {"username": "engineer", "password": "engineer@khwezi", "role": "Mining Engineer"},
+            {"username": "maintenance", "password": "maintenance@khwezi", "role": "Maintenance Engineer"},
+            {"username": "manager", "password": "manager@khwezi", "role": "Manager"},
+        ]
+    )
+
+
 # =========================
 # Data file utilities
 # =========================
@@ -455,14 +468,6 @@ def to_dataframe(value, default_df):
 # =========================
 # Session setup
 # =========================
-USERS = {
-    "admin": {"password": "admin@khwezi", "role": "Administrator"},
-    "safety": {"password": "safety@khwezi", "role": "Safety Officer"},
-    "engineer": {"password": "engineer@khwezi", "role": "Mining Engineer"},
-    "maintenance": {"password": "maintenance@khwezi", "role": "Maintenance Engineer"},
-    "manager": {"password": "manager@khwezi", "role": "Manager"},
-}
-
 ROLE_PAGES = {
     "Administrator": ["Dashboard", "Worker Safety", "Safety Incidents", "Equipment Monitoring", "Maintenance", "Risk Assessment", "Alerts", "Data Analysis"],
     "Safety Officer": ["Dashboard", "Worker Safety", "Safety Incidents", "Risk Assessment", "Alerts"],
@@ -481,6 +486,12 @@ def init_session_state():
         st.session_state.role = ""
     if "welcome_seen" not in st.session_state:
         st.session_state.welcome_seen = False
+
+    if "accounts" not in st.session_state:
+        st.session_state.accounts = load_data(ACCOUNTS_FILE, make_default_accounts())
+    else:
+        st.session_state.accounts = to_dataframe(st.session_state.accounts, make_default_accounts())
+
     if "workers" not in st.session_state:
         st.session_state.workers = load_data(WORKERS_FILE, make_default_workers())
     else:
@@ -598,23 +609,62 @@ def login_page():
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    st.markdown("<div class='glass-card' style='max-width: 760px;'>", unsafe_allow_html=True)
-    with st.form("login_form"):
-        username = st.text_input("Username", placeholder="Enter username")
-        password = st.text_input("Password", type="password", placeholder="Enter password")
-        submit = st.form_submit_button("Login")
+    left_col, right_col = st.columns(2)
 
-    if submit:
-        if username in USERS and password == USERS[username]["password"]:
-            st.session_state.logged_in = True
-            st.session_state.username = username
-            st.session_state.role = USERS[username]["role"]
-            st.success(f"Welcome back, {username}!")
-            st.rerun()
-        else:
-            st.error("Invalid username and/or password.")
+    with left_col:
+        st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
+        with st.form("login_form"):
+            username = st.text_input("Username", placeholder="Enter username")
+            password = st.text_input("Password", type="password", placeholder="Enter password")
+            login_submit = st.form_submit_button("Login")
 
-    st.markdown("</div>", unsafe_allow_html=True)
+        if login_submit:
+            if username.strip() == "":
+                st.error("Please enter a username.")
+            else:
+                account_match = st.session_state.accounts[
+                    st.session_state.accounts["username"].astype(str).str.strip().str.lower() == username.strip().lower()
+                ]
+                if account_match.empty:
+                    st.error("Invalid username and/or password.")
+                elif str(account_match.iloc[0]["password"]).strip() != password:
+                    st.error("Invalid username and/or password.")
+                else:
+                    st.session_state.logged_in = True
+                    st.session_state.username = str(account_match.iloc[0]["username"]).strip()
+                    st.session_state.role = str(account_match.iloc[0]["role"]).strip()
+                    st.success(f"Welcome back, {st.session_state.username}!")
+                    st.rerun()
+        st.markdown("</div>", unsafe_allow_html=True)
+
+    with right_col:
+        st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
+        with st.form("signup_form"):
+            new_username = st.text_input("New username", key="signup_username", placeholder="Choose a username")
+            new_password = st.text_input("Create password", type="password", key="signup_password", placeholder="Create a password")
+            new_role = st.selectbox(
+                "Role",
+                ["Administrator", "Safety Officer", "Mining Engineer", "Maintenance Engineer", "Manager"],
+                key="signup_role",
+            )
+            signup_submit = st.form_submit_button("Create Account")
+
+        if signup_submit:
+            cleaned_username = new_username.strip()
+            if cleaned_username == "":
+                st.error("Please choose a valid username.")
+            elif new_password.strip() == "":
+                st.error("Please create a password.")
+            elif not st.session_state.accounts["username"].astype(str).str.strip().str.lower().isin([cleaned_username.lower()]).any():
+                new_account = pd.DataFrame([
+                    {"username": cleaned_username, "password": new_password.strip(), "role": new_role}
+                ])
+                st.session_state.accounts = pd.concat([st.session_state.accounts, new_account], ignore_index=True)
+                st.session_state.accounts.to_csv(ACCOUNTS_FILE, index=False)
+                st.success("Account created successfully. You can now log in.")
+            else:
+                st.error("That username already exists. Please choose another one.")
+        st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(
