@@ -28,8 +28,7 @@ def apply_custom_css():
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
         html, body, [data-testid="stAppViewContainer"] {
-            background: linear-gradient(rgba(10,20,28,0.72), rgba(10,20,28,0.72)),
-                        url("https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1800&q=80") center/cover no-repeat fixed;
+            background: linear-gradient(180deg, rgba(6, 18, 27, 0.96) 0%, rgba(15, 23, 42, 0.98) 42%, rgba(3, 7, 18, 1) 100%);
             font-family: 'Inter', sans-serif;
             color: #f8fafc;
         }
