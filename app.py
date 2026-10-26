@@ -192,7 +192,7 @@ def get_allowed_tabs(role):
 
 
 # ============================
-# Login and signup UI
+# Login and signup UI with mining background
 # ============================
 def login_page():
     ensure_data_files()
@@ -201,49 +201,56 @@ def login_page():
         """
         <style>
         html, body, [data-testid="stAppViewContainer"] {
-            background-color: #f3f4f6;
-            color: #1f2937;
+            background-image: linear-gradient(rgba(0,0,0,0.38), rgba(0,0,0,0.38)),
+                url("https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1600&q=80");
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            color: #f8fafc;
         }
 
         .big-title {
             font-size: 4.2rem;
             font-weight: 800;
             line-height: 1.0;
-            color: #1f2937;
+            color: #ffffff;
             margin-top: 18px;
-            margin-bottom: 8px;
+            margin-bottom: 14px;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.5);
         }
 
         .subtext {
-            color: #4a90e2;
+            color: #dbeafe;
             font-size: 1.8rem;
             font-weight: 500;
             margin-bottom: 26px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.4);
         }
 
         .auth-toggle {
-            background: #0f172a;
+            background: rgba(15, 23, 42, 0.72);
             border-radius: 999px;
             padding: 6px 8px;
             width: fit-content;
             margin-bottom: 22px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.18);
         }
 
         .panel {
-            background: #eef1f4;
+            background: rgba(255,255,255,0.9);
             color: #1f2937;
             border-radius: 12px;
             padding: 18px 18px 22px 18px;
-            border: 1px solid #cfd8e3;
-            box-shadow: none;
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.12);
             max-width: 100%;
         }
 
         .stTextInput > div > div > input,
         .stSelectbox > div > div,
         .stNumberInput > div > div > input {
-            background: #f8fafc;
+            background: rgba(255,255,255,0.9);
             color: #111827;
             border: 1px solid #cfd8e3;
             border-radius: 10px;
@@ -258,7 +265,7 @@ def login_page():
         }
 
         .stButton > button {
-            background: #dfe7ee;
+            background: #f8fafc;
             color: #1f2937;
             border-radius: 10px;
             border: 1px solid #d0d7df;
@@ -269,16 +276,16 @@ def login_page():
         }
 
         .stButton > button:hover {
-            background: #d4dde6;
+            background: #e2e8f0;
             border-color: #c1ccd7;
         }
 
         .stRadio > div {
-            background: #0f172a;
+            background: rgba(15, 23, 42, 0.78);
             border-radius: 999px;
             padding: 5px 8px;
             width: fit-content;
-            border: 1px solid #0f172a;
+            border: 1px solid rgba(255,255,255,0.18);
         }
 
         .stRadio label {
@@ -302,8 +309,6 @@ def login_page():
 
     if auth_mode == "Login":
         st.markdown("<div class='panel'>", unsafe_allow_html=True)
-        st.subheader("", anchor=False)
-
         with st.form("login_form", clear_on_submit=False):
             username = st.text_input("Username")
             password = st.text_input("Password", type="password")
