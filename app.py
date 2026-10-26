@@ -206,72 +206,79 @@ def login_page():
         }
 
         .big-title {
-            font-size: 4.0rem;
+            font-size: 4.2rem;
             font-weight: 800;
             line-height: 1.0;
             color: #1f2937;
-            margin-top: 25px;
-            margin-bottom: 10px;
+            margin-top: 18px;
+            margin-bottom: 8px;
         }
 
         .subtext {
             color: #4a90e2;
-            font-size: 2.0rem;
+            font-size: 1.8rem;
             font-weight: 500;
-            margin-bottom: 28px;
+            margin-bottom: 26px;
         }
 
         .auth-toggle {
-            background: #1f2937;
+            background: #0f172a;
             border-radius: 999px;
-            padding: 6px;
-            margin-bottom: 24px;
+            padding: 6px 8px;
             width: fit-content;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            margin-bottom: 22px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
         }
 
         .panel {
-            background: #1f2937;
-            color: white;
-            border-radius: 16px;
-            padding: 26px 24px;
-            border: 1px solid #d1d5db;
-            box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+            background: #eef1f4;
+            color: #1f2937;
+            border-radius: 12px;
+            padding: 18px 18px 22px 18px;
+            border: 1px solid #cfd8e3;
+            box-shadow: none;
+            max-width: 100%;
         }
 
         .stTextInput > div > div > input,
         .stSelectbox > div > div,
         .stNumberInput > div > div > input {
-            background: #ffffff;
+            background: #f8fafc;
             color: #111827;
-            border: 1px solid #d1d5db;
+            border: 1px solid #cfd8e3;
             border-radius: 10px;
+            min-height: 52px;
+            font-size: 1.05rem;
         }
 
         label {
-            color: #ffffff !important;
+            color: #1f2937 !important;
             font-weight: 600;
+            font-size: 1.0rem;
         }
 
         .stButton > button {
-            background: #2b3a4b;
-            color: white;
+            background: #dfe7ee;
+            color: #1f2937;
             border-radius: 10px;
-            border: 1px solid #2b3a4b;
+            border: 1px solid #d0d7df;
             font-weight: 700;
+            min-height: 48px;
+            width: 120px;
+            float: right;
         }
 
         .stButton > button:hover {
-            background: #1f2a38;
-            border-color: #1f2a38;
+            background: #d4dde6;
+            border-color: #c1ccd7;
         }
 
         .stRadio > div {
-            background: #111827;
+            background: #0f172a;
             border-radius: 999px;
             padding: 5px 8px;
             width: fit-content;
-            border: 1px solid #374151;
+            border: 1px solid #0f172a;
         }
 
         .stRadio label {
@@ -287,8 +294,7 @@ def login_page():
         unsafe_allow_html=True,
     )
 
-    st.markdown('<div class="big-title">Khwezi Mining Health</div>', unsafe_allow_html=True)
-    st.markdown('<div class="subtext">Wits MINN2020A Project</div>', unsafe_allow_html=True)
+    st.markdown('<div class="big-title">Login</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="auth-toggle">', unsafe_allow_html=True)
     auth_mode = st.radio("", ["Login", "Sign Up"], horizontal=True, index=0)
@@ -296,7 +302,7 @@ def login_page():
 
     if auth_mode == "Login":
         st.markdown("<div class='panel'>", unsafe_allow_html=True)
-        st.subheader("Login")
+        st.subheader("", anchor=False)
 
         with st.form("login_form", clear_on_submit=False):
             username = st.text_input("Username")
