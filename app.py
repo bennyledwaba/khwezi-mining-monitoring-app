@@ -28,7 +28,7 @@ def apply_custom_css():
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
         html, body, [data-testid="stAppViewContainer"] {
-            background: linear-gradient(rgba(10,20,28,0.62), rgba(10,20,28,0.62)),
+            background: linear-gradient(rgba(10,20,28,0.72), rgba(10,20,28,0.72)),
                         url("https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1800&q=80") center/cover no-repeat fixed;
             font-family: 'Inter', sans-serif;
             color: #f8fafc;
@@ -44,17 +44,22 @@ def apply_custom_css():
         }
 
         .stSidebar > div {
-            background: rgba(15, 23, 42, 0.82);
+            background: rgba(15, 23, 42, 0.86);
             border-right: 1px solid rgba(148, 163, 184, 0.25);
+        }
+
+        .stSidebar .stMarkdown, .stSidebar .stTextInput, .stSidebar .stSelectbox,
+        .stSidebar .stButton, .stSidebar p, .stSidebar label {
+            color: #f8fafc !important;
         }
 
         .hero {
             padding: 2rem 1.5rem;
             border-radius: 22px;
-            background: rgba(15, 23, 42, 0.60);
+            background: rgba(15, 23, 42, 0.72);
             border: 1px solid rgba(148,163,184,0.25);
             box-shadow: 0 12px 30px rgba(0,0,0,0.18);
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(5px);
         }
 
         .hero h1 {
@@ -62,11 +67,12 @@ def apply_custom_css():
             font-weight: 800;
             color: #ffffff;
             margin-bottom: 0.3rem;
+            line-height: 1.1;
         }
 
         .hero p {
             font-size: 1.08rem;
-            color: #dfe7f5;
+            color: #e2e8f0;
             margin-bottom: 0;
         }
 
@@ -79,7 +85,7 @@ def apply_custom_css():
         }
 
         .glass-card {
-            background: rgba(15, 23, 42, 0.62);
+            background: rgba(15, 23, 42, 0.68);
             border: 1px solid rgba(148,163,184,0.20);
             border-radius: 18px;
             padding: 1rem 1rem 1.2rem;
@@ -93,8 +99,12 @@ def apply_custom_css():
             margin-bottom: 0.5rem;
         }
 
+        h1, h2, h3, h4, h5, h6, p, div, span, label, li {
+            color: #f8fafc !important;
+        }
+
         .stMetric > div {
-            background: rgba(15, 23, 42, 0.72);
+            background: rgba(15, 23, 42, 0.78);
             border: 1px solid rgba(148,163,184,0.20);
             border-radius: 16px;
             padding: 0.7rem 0.9rem;
@@ -102,7 +112,7 @@ def apply_custom_css():
         }
 
         .stMetric label {
-            color: #dfe7f5 !important;
+            color: #e2e8f0 !important;
             font-size: 0.8rem !important;
             font-weight: 600;
         }
@@ -132,11 +142,18 @@ def apply_custom_css():
         .stSelectbox > div > div,
         .stNumberInput > div > div > input,
         .stDateInput > div > div,
-        .stTimeInput > div > div {
-            background: rgba(255,255,255,0.95);
-            color: #0f172a;
+        .stTimeInput > div > div,
+        .stFileUploader > div {
+            background: rgba(255,255,255,0.96) !important;
+            color: #0f172a !important;
             border-radius: 10px;
             border: 1px solid rgba(148,163,184,0.60);
+        }
+
+        .stTextInput label, .stTextArea label, .stSelectbox label, .stNumberInput label,
+        .stDateInput label, .stTimeInput label, .stFileUploader label {
+            color: #f8fafc !important;
+            font-weight: 600;
         }
 
         .stRadio > div {
@@ -149,6 +166,16 @@ def apply_custom_css():
         .stRadio label {
             color: white !important;
             font-weight: 600;
+        }
+
+        .stDataFrame {
+            background: rgba(15, 23, 42, 0.68);
+            border: 1px solid rgba(148,163,184,0.15);
+            border-radius: 12px;
+        }
+
+        .stDataFrame .stDataFrameContainer {
+            color: #f8fafc !important;
         }
 
         .info-box {
@@ -181,6 +208,14 @@ def apply_custom_css():
             border-radius: 12px;
             padding: 0.9rem 1rem;
             color: #fee2e2;
+        }
+
+        .stAlert {
+            border-radius: 12px;
+        }
+
+        .stSuccess, .stError, .stWarning, .stInfo {
+            color: #f8fafc !important;
         }
         </style>
         """,
