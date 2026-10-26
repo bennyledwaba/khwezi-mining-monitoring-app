@@ -14,19 +14,32 @@ def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 
-def ensure_users_file() -> None:
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    if USERS_PATH.exists():
-        return
-
-    default_users = pd.DataFrame(
+def default_users_df() -> pd.DataFrame:
+    return pd.DataFrame(
         [
             {"username": "admin", "password": hash_password("admin123"), "role": "Administrator", "status": "Active"},
             {"username": "safety1", "password": hash_password("safety123"), "role": "Safety Officer", "status": "Active"},
             {"username": "eng1", "password": hash_password("eng123"), "role": "Mining Engineer", "status": "Active"},
         ]
     )
-    default_users.to_csv(USERS_PATH, index=False)
+
+
+def ensure_users_file() -> None:
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+    if not USERS_PATH.exists():
+        default_users_df().to_csv(USERS_PATH, index=False)
+        return
+
+    try:
+        df = pd.read_csv(USERS_PATH)
+        required_columns = {"username", "password", "role", "status"}
+        if set(df.columns).issuperset(required_columns):
+            return
+    except Exception:
+        pass
+
+    default_users_df().to_csv(USERS_PATH, index=False)
 
 
 def load_users() -> pd.DataFrame:
