@@ -28,51 +28,52 @@ ACCOUNTS_FILE = DATA_DIR / "user_accounts.csv"
 # Defaults and fallback datasets
 # -----------------------------------------------------------------------------
 def make_default_workers():
-    data = [
-        {
-            "Name": "Sipho Sithole (1)",
-            "Worker ID": "W-001",
-            "Department": "Mining",
-            "Training Status": "Completed",
-            "Job Role": "Operator",
-            "Shift": "Day",
-            "PPE Compliance": "Compliant",
-            "Fatigue Level": "Low",
-            "Safety Observations": "Routine checks passed.",
-            "Near Misses": 0,
-            "Previous Incidents": 0,
-            "Risk Level": "Low",
-        },
-        {
-            "Name": "Thabo Dlamini (2)",
-            "Worker ID": "W-002",
-            "Department": "Safety",
-            "Training Status": "Completed",
-            "Job Role": "Safety Officer",
-            "Shift": "Night",
-            "PPE Compliance": "Compliant",
-            "Fatigue Level": "Medium",
-            "Safety Observations": "Routine checks passed.",
-            "Near Misses": 1,
-            "Previous Incidents": 0,
-            "Risk Level": "Medium",
-        },
-        {
-            "Name": "Aphiwe Nkosi (3)",
-            "Worker ID": "W-003",
-            "Department": "Engineering",
-            "Training Status": "Pending",
-            "Job Role": "Technician",
-            "Shift": "Day",
-            "PPE Compliance": "Non-compliant",
-            "Fatigue Level": "High",
-            "Safety Observations": "PPE issue flagged.",
-            "Near Misses": 2,
-            "Previous Incidents": 1,
-            "Risk Level": "High",
-        },
-    ]
-    return pd.DataFrame(data)
+    return pd.DataFrame(
+        [
+            {
+                "Name": "Sipho Sithole (1)",
+                "Worker ID": "W-001",
+                "Department": "Mining",
+                "Training Status": "Completed",
+                "Job Role": "Operator",
+                "Shift": "Day",
+                "PPE Compliance": "Compliant",
+                "Fatigue Level": "Low",
+                "Safety Observations": "Routine checks passed.",
+                "Near Misses": 0,
+                "Previous Incidents": 0,
+                "Risk Level": "Low",
+            },
+            {
+                "Name": "Thabo Dlamini (2)",
+                "Worker ID": "W-002",
+                "Department": "Safety",
+                "Training Status": "Completed",
+                "Job Role": "Safety Officer",
+                "Shift": "Night",
+                "PPE Compliance": "Compliant",
+                "Fatigue Level": "Medium",
+                "Safety Observations": "Routine checks passed.",
+                "Near Misses": 1,
+                "Previous Incidents": 0,
+                "Risk Level": "Medium",
+            },
+            {
+                "Name": "Aphiwe Nkosi (3)",
+                "Worker ID": "W-003",
+                "Department": "Engineering",
+                "Training Status": "Pending",
+                "Job Role": "Technician",
+                "Shift": "Day",
+                "PPE Compliance": "Non-compliant",
+                "Fatigue Level": "High",
+                "Safety Observations": "PPE issue flagged.",
+                "Near Misses": 2,
+                "Previous Incidents": 1,
+                "Risk Level": "High",
+            },
+        ]
+    )
 
 
 def make_default_incidents():
@@ -443,6 +444,18 @@ def read_csv_safe(path, fallback_factory=None):
     return pd.DataFrame()
 
 
+def load_users_db():
+    accounts_df = read_csv_safe(ACCOUNTS_FILE, make_default_accounts)
+    users = {}
+    for _, row in accounts_df.iterrows():
+        username = str(row.get("Username", "")).strip()
+        password = str(row.get("Password", "")).strip()
+        role = str(row.get("Role", "Manager")).strip() or "Manager"
+        if username:
+            users[username] = {"password": password, "role": role}
+    return users
+
+
 if "equipment" not in st.session_state:
     st.session_state.equipment = read_csv_safe(EQUIPMENT_FILE, make_default_equipment).to_dict("records")
 
@@ -458,13 +471,7 @@ if "risk_records" not in st.session_state:
 # -----------------------------------------------------------------------------
 # Access control
 # -----------------------------------------------------------------------------
-users = {
-    "admin": {"password": "admin@khwezi", "role": "Administrator"},
-    "safety": {"password": "safety@khwezi", "role": "Safety Officer"},
-    "engineer": {"password": "engineer@khwezi", "role": "Mining Engineer"},
-    "maintenance": {"password": "maintenance@khwezi", "role": "Maintenance Engineer"},
-    "manager": {"password": "manager@khwezi", "role": "Manager"},
-}
+users = load_users_db()
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
@@ -495,7 +502,7 @@ def render_logged_in_topbar():
 
 
 # -----------------------------------------------------------------------------
-# Login screen
+# Login / signup screen
 # -----------------------------------------------------------------------------
 if not st.session_state.logged_in:
     st.markdown(
@@ -523,8 +530,9 @@ if not st.session_state.logged_in:
         unsafe_allow_html=True,
     )
 
-    login_col1, login_col2 = st.columns([1.2, 1.5])
-    with login_col2:
+    login_tab, signup_tab = st.tabs(["Login", "Sign up"])
+
+    with login_tab:
         st.markdown(
             """
             <div class="info-panel">
@@ -538,10 +546,11 @@ if not st.session_state.logged_in:
         password = st.text_input("Password", type="password", key="login_password")
 
         if st.button("Login", use_container_width=True):
-            if username in users and password == users[username]["password"]:
+            current_users = load_users_db()
+            if username in current_users and password == current_users[username]["password"]:
                 st.session_state.logged_in = True
                 st.session_state.username = username
-                st.session_state.role = users[username]["role"]
+                st.session_state.role = current_users[username]["role"]
                 st.rerun()
             else:
                 st.error("Invalid username and/or password")
@@ -559,6 +568,51 @@ if not st.session_state.logged_in:
             """,
             unsafe_allow_html=True,
         )
+
+    with signup_tab:
+        st.markdown(
+            """
+            <div class="info-panel">
+                <div style="font-size: 1.5rem; font-weight: 700; color: #f5faff; margin-bottom: 1rem;">Create an account</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+
+        signup_username = st.text_input("Create username", key="signup_username")
+        signup_password = st.text_input("Create password", type="password", key="signup_password")
+        signup_role = st.selectbox(
+            "Role",
+            ["Manager", "Safety Officer", "Mining Engineer", "Maintenance Engineer", "Administrator"],
+            key="signup_role",
+        )
+
+        if st.button("Create account", use_container_width=True):
+            current_users = load_users_db()
+            clean_name = signup_username.strip()
+            clean_password = signup_password.strip()
+
+            if not clean_name:
+                st.error("Username is required.")
+            elif clean_name in current_users:
+                st.error("That username already exists. Please choose another one.")
+            elif len(clean_password) < 4:
+                st.error("Password must be at least 4 characters long.")
+            else:
+                existing_df = read_csv_safe(ACCOUNTS_FILE, make_default_accounts)
+                signup_record = {
+                    "Username": clean_name,
+                    "Password": clean_password,
+                    "Role": signup_role,
+                }
+                updated_df = pd.concat([existing_df, pd.DataFrame([signup_record])], ignore_index=True)
+                updated_df.to_csv(ACCOUNTS_FILE, index=False)
+
+                st.session_state.logged_in = True
+                st.session_state.username = clean_name
+                st.session_state.role = signup_role
+                st.success(f"Account created for {clean_name}. You are now signed in.")
+                st.rerun()
 
     st.stop()
 
@@ -600,7 +654,11 @@ if page == "Dashboard":
 
     total_workers = len(workers_df)
     total_incidents = len(incidents_df)
-    open_incidents = len(incidents_df[incidents_df["Incident Status"].astype(str).str.lower().ne("resolved")]) if not incidents_df.empty and "Incident Status" in incidents_df.columns else 0
+    open_incidents = (
+        len(incidents_df[incidents_df["Incident Status"].astype(str).str.lower().ne("resolved")])
+        if not incidents_df.empty and "Incident Status" in incidents_df.columns
+        else 0
+    )
     total_equipment = len(equipment_df)
     total_near_misses = 0
     if not incidents_df.empty and "Incident Type" in incidents_df.columns:
@@ -1052,7 +1110,7 @@ elif page == "Alerts":
             if not low_availability.empty:
                 st.warning(f"AVAILABILITY ALERT: {len(low_availability)} equipment record(s) have availability below 80%.")
         if "Overdue" in maintenance_df.columns:
-            overdue = maintenance_df[maintenance_df["Overdue"].astype(str).str.lower().isin(["true", "1", "yes"]) ]
+            overdue = maintenance_df[maintenance_df["Overdue"].astype(str).str.lower().isin(["true", "1", "yes"])]
             if not overdue.empty:
                 st.error(f"MAINTENANCE ALERT: {len(overdue)} equipment record(s) are overdue.")
         else:
@@ -1067,7 +1125,11 @@ elif page == "Data Analysis":
     st.divider()
     st.subheader("Import Many Records from CSV")
 
-    data_category = st.selectbox("Choose the type of data to import", ["Workers", "Safety Incidents", "Equipment", "Maintenance", "Risk Assessments"], key="bulk_import_category")
+    data_category = st.selectbox(
+        "Choose the type of data to import",
+        ["Workers", "Safety Incidents", "Equipment", "Maintenance", "Risk Assessments"],
+        key="bulk_import_category",
+    )
     uploaded_file = st.file_uploader("Upload a CSV file", type=["csv"], key="bulk_import_file")
 
     if st.button("Import CSV Data"):
