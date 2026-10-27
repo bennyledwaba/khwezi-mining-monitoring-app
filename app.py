@@ -1,6 +1,7 @@
-import os
-import random
+from pathlib import Path
 import datetime
+import random
+
 import pandas as pd
 import streamlit as st
 
@@ -13,12 +14,16 @@ st.set_page_config(
     layout="wide",
 )
 
-WORKERS_FILE = "workers.csv"
-INCIDENTS_FILE = "safety_incidents.csv"
-EQUIPMENT_FILE = "equipment.csv"
-MAINTENANCE_FILE = "maintenance.csv"
-RISK_FILE = "risk_assessments.csv"
-ACCOUNTS_FILE = "user_accounts.csv"
+BASE_DIR = Path(__file__).resolve().parent
+DATA_DIR = BASE_DIR / "data"
+DATA_DIR.mkdir(exist_ok=True)
+
+WORKERS_FILE = DATA_DIR / "workers.csv"
+INCIDENTS_FILE = DATA_DIR / "incidents.csv"
+EQUIPMENT_FILE = DATA_DIR / "equipment.csv"
+MAINTENANCE_FILE = DATA_DIR / "maintenance.csv"
+RISK_FILE = DATA_DIR / "risk_assessments.csv"
+ACCOUNTS_FILE = DATA_DIR / "user_accounts.csv"
 
 # ==============================================================================
 # Styling & Theme Customizations
@@ -27,7 +32,7 @@ def apply_custom_css():
     st.markdown(
         """
         <style>
-        @import url('https://googleapis.com');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
         html, body, [data-testid="stAppViewContainer"], .stApp, .stMain {
             background: linear-gradient(180deg, rgba(6, 18, 27, 0.96) 0%, rgba(15, 23, 42, 0.98) 42%, rgba(3, 7, 18, 1) 100%);
@@ -206,6 +211,7 @@ def apply_custom_css():
         unsafe_allow_html=True,
     )
 
+
 apply_custom_css()
 
 # ==============================================================================
@@ -214,51 +220,226 @@ apply_custom_css()
 DEPARTMENTS = ["Mining", "Engineering", "Geology", "Safety"]
 SHIFTS = ["Day", "Night"]
 LOCATIONS = ["Pit A", "Pit B", "South Shaft", "North Shaft", "Crusher Plant", "Haul Road 3"]
-SA_NAMES = ["Sipho Sithole", "Thabo Dlamini", "Aphiwe Nkosi", "Lerato Moloi", "Zama Khumalo", "Mpho Ncube", "Kagiso Mokoena"]
+SA_NAMES = [
+    "Sipho Sithole",
+    "Thabo Dlamini",
+    "Aphiwe Nkosi",
+    "Lerato Moloi",
+    "Zama Khumalo",
+    "Mpho Ncube",
+    "Kagiso Mokoena",
+]
+
 
 def make_default_workers():
     workers_data = []
     for i in range(1, 21):
-        name = SA_NAMES[i % len(SA_NAMES)]
+        name = SA_NAMES[(i - 1) % len(SA_NAMES)]
         ppe = random.choices(["Compliant", "Non-compliant"], weights=[0.9, 0.1])[0]
         fatigue = random.choices(["Low", "Medium", "High"], weights=[0.7, 0.2, 0.1])[0]
         nm = random.choices([0, 1, 2], weights=[0.8, 0.15, 0.05])[0]
         pi = random.choices([0, 1], weights=[0.9, 0.1])[0]
         score = (2 if ppe == "Non-compliant" else 0) + (2 if fatigue == "High" else 0) + (1 if nm > 0 else 0)
         level = "High" if score >= 4 else ("Medium" if score >= 2 else "Low")
-        
-        workers_data.append({
-            "Name": f"{name} ({i})", "Worker ID": f"W-{i:03d}", "Department": random.choice(DEPARTMENTS),
-            "Training Status": "Completed" if i % 4 != 0 else "Pending", "Job Role": "Operator",
-            "Shift": random.choice(SHIFTS), "PPE Compliance": ppe, "Fatigue Level": fatigue,
-            "Safety Observations": "Routine lookups valid.", "Near Misses": nm, "Previous Incidents": pi, "Risk Level": level
-        })
+
+        workers_data.append(
+            {
+                "Name": f"{name} ({i})",
+                "Worker ID": f"W-{i:03d}",
+                "Department": random.choice(DEPARTMENTS),
+                "Training Status": "Completed" if i % 4 != 0 else "Pending",
+                "Job Role": "Operator",
+                "Shift": random.choice(SHIFTS),
+                "PPE Compliance": ppe,
+                "Fatigue Level": fatigue,
+                "Safety Observations": "Routine lookups valid.",
+                "Near Misses": nm,
+                "Previous Incidents": pi,
+                "Risk Level": level,
+            }
+        )
     return pd.DataFrame(workers_data)
+
 
 def make_default_incidents():
     inc_data = []
     for i in range(1, 11):
-        inc_data.append({
-            "Incident ID": i, "Date": str(datetime.date(2026, 8, i)), "Time": f"1{i}:15", "Shift": random.choice(SHIFTS),
-            "Location": random.choice(LOCATIONS), "Department": random.choice(DEPARTMENTS),
-            "Incident Type": random.choice(["Near Miss", "Unsafe Condition", "Injury"]), "Severity": random.choice(["Medium", "High", "Critical"]),
-            "Injury Status": "No", "Lost-Time Injury": "No", "Description": "Dynamic area shift variance recorded.",
-            "Cause": "Visibility limits.", "Corrective Action": "Barricades established.", "Incident Status": "Open" if i % 3 == 0 else "Resolved"
-        })
+        inc_data.append(
+            {
+                "Incident ID": i,
+                "Date": str(datetime.date(2026, 8, i)),
+                "Time": f"{i}:15",
+                "Shift": random.choice(SHIFTS),
+                "Location": random.choice(LOCATIONS),
+                "Department": random.choice(DEPARTMENTS),
+                "Incident Type": random.choice(["Near Miss", "Unsafe Condition", "Injury"]),
+                "Severity": random.choice(["Medium", "High", "Critical"]),
+                "Injury Status": "No",
+                "Lost-Time Injury": "No",
+                "Description": "Dynamic area shift variance recorded.",
+                "Cause": "Visibility limits.",
+                "Corrective Action": "Barricades established.",
+                "Incident Status": "Open" if i % 3 == 0 else "Resolved",
+            }
+        )
     return pd.DataFrame(inc_data)
+
 
 def make_default_equipment():
     eq_data = []
     types = ["Truck", "Excavator", "Drill"]
     for i in range(1, 11):
-        eq_data.append({
-            "Equipment Name": f"{random.choice(types)} Model X", "Equipment ID": f"EQ-{100+i}", "Equipment Type": random.choice(types),
-            "Manufacturer": "CAT", "Operating Hours": float(i * 500), "Temperature": float(70 + (i * 4)), "Vibration": float(3.0 + (i * 0.6)),
-            "Fuel Level": 85 - (i * 3), "Brakes": "Good", "Tyres": "Good", "Engine": "Good" if i % 5 != 0 else "Needs Repair",
-            "Downtime": float(i * 1.5), "Maintenance Status": "Up to date" if i % 3 != 0 else "Overdue"
-        })
+        eq_data.append(
+            {
+                "Equipment Name": f"{random.choice(types)} Model X",
+                "Equipment ID": f"EQ-{100 + i}",
+                "Equipment Type": random.choice(types),
+                "Manufacturer": "CAT",
+                "Operating Hours": float(i * 500),
+                "Temperature": float(70 + (i * 4)),
+                "Vibration": float(3.0 + (i * 0.6)),
+                "Fuel Level": 85 - (i * 3),
+                "Brakes": "Good",
+                "Tyres": "Good",
+                "Engine": "Good" if i % 5 != 0 else "Needs Repair",
+                "Downtime": float(i * 1.5),
+                "Maintenance Status": "Up to date" if i % 3 != 0 else "Overdue",
+            }
+        )
     return pd.DataFrame(eq_data)
 
+
 def make_default_maintenance():
-    return pd.DataFrame([
-        {"Equipment Name": "Truck Model X", "Equipment ID": "EQ-101", "Maintenance Type": "Routine Inspection", "Maintenance Date": "2026-08-01", "Maintenance Status": "Completed", "Maintenance Notes": "Filters re-cleared.", "Operating Hours": 1500.0, "Downtime": 4.5, "Availability (%)": 95.2, "Next Maintenance Date": "2026-09-15"},
+    return pd.DataFrame(
+        [
+            {
+                "Equipment Name": "Truck Model X",
+                "Equipment ID": "EQ-101",
+                "Maintenance Type": "Routine Inspection",
+                "Maintenance Date": "2026-08-01",
+                "Maintenance Status": "Completed",
+                "Maintenance Notes": "Filters re-cleaned.",
+                "Operating Hours": 1500.0,
+                "Downtime": 4.5,
+                "Availability (%)": 95.2,
+                "Next Maintenance Date": "2026-09-15",
+            }
+        ]
+    )
+
+
+def make_default_risk():
+    return pd.DataFrame(
+        [
+            {
+                "Risk ID": "R-001",
+                "Area": "Pit A",
+                "Date": "2026-08-01",
+                "Risk Type": "Ground Stability",
+                "Severity": "High",
+                "Mitigation": "Add slope monitoring and barricades.",
+                "Status": "Monitoring",
+            }
+        ]
+    )
+
+
+def make_default_accounts():
+    return pd.DataFrame(
+        [
+            {"Username": "admin", "Role": "Supervisor", "Department": "Safety", "Last Login": "2026-08-01"},
+            {"Username": "engineer1", "Role": "Engineer", "Department": "Engineering", "Last Login": "2026-08-02"},
+        ]
+    )
+
+
+def ensure_default_files():
+    default_map = {
+        WORKERS_FILE: make_default_workers,
+        INCIDENTS_FILE: make_default_incidents,
+        EQUIPMENT_FILE: make_default_equipment,
+        MAINTENANCE_FILE: make_default_maintenance,
+        RISK_FILE: make_default_risk,
+        ACCOUNTS_FILE: make_default_accounts,
+    }
+
+    for path, factory in default_map.items():
+        if not path.exists():
+            df = factory()
+            df.to_csv(path, index=False)
+
+
+def load_csv(path, fallback_factory):
+    if path.exists():
+        return pd.read_csv(path)
+    df = fallback_factory()
+    df.to_csv(path, index=False)
+    return df
+
+
+ensure_default_files()
+
+workers_df = load_csv(WORKERS_FILE, make_default_workers)
+incidents_df = load_csv(INCIDENTS_FILE, make_default_incidents)
+equipment_df = load_csv(EQUIPMENT_FILE, make_default_equipment)
+maintenance_df = load_csv(MAINTENANCE_FILE, make_default_maintenance)
+risk_df = load_csv(RISK_FILE, make_default_risk)
+accounts_df = load_csv(ACCOUNTS_FILE, make_default_accounts)
+
+# ==============================================================================
+# Main App Display
+# ==============================================================================
+st.markdown(
+    """
+    <div class="hero">
+        <div class="small-label">Operational Safety Dashboard</div>
+        <h1>SafeMine360 - Khwezi Mining</h1>
+        <p>Health, safety, equipment and maintenance overview for active mining operations.</p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+col1, col2, col3, col4 = st.columns(4)
+col1.metric("Workers", len(workers_df))
+col2.metric("Incidents", len(incidents_df))
+col3.metric("Equipment", len(equipment_df))
+col4.metric("High Risk Items", int((risk_df["Severity"] == "High").sum()))
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+# Tabs for a cleaner dashboard feel
+overview_tab, workers_tab, incidents_tab, equipment_tab, maintenance_tab = st.tabs(
+    ["Overview", "Workers", "Incidents", "Equipment", "Maintenance"]
+)
+
+with overview_tab:
+    st.subheader("Safety overview")
+    st.dataframe(workers_df.head(10), use_container_width=True)
+
+with workers_tab:
+    st.subheader("Worker compliance records")
+    st.dataframe(workers_df, use_container_width=True)
+
+with incidents_tab:
+    st.subheader("Incident log")
+    st.dataframe(incidents_df, use_container_width=True)
+
+with equipment_tab:
+    st.subheader("Equipment status")
+    st.dataframe(equipment_df, use_container_width=True)
+
+with maintenance_tab:
+    st.subheader("Maintenance schedule")
+    st.dataframe(maintenance_df, use_container_width=True)
+
+st.sidebar.title("Controls")
+st.sidebar.caption("Synthetic mining monitoring data")
+st.sidebar.write(f"Data directory: {DATA_DIR}")
+
+with st.sidebar:
+    st.button("Refresh data", use_container_width=True)
+    st.caption("The app automatically creates missing CSVs at startup so it can run without manual setup.")
+
